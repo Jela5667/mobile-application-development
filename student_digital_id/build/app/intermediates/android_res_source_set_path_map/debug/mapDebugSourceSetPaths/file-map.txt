@@ -1,0 +1,7 @@
+com.example.student_digital_id.app-debug-0 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\android\app\src\debug\res
+com.example.student_digital_id.app-main-1 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\android\app\src\main\res
+com.example.student_digital_id.app-pngs-2 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\build\app\generated\res\pngs\debug
+com.example.student_digital_id.app-updated_navigation_xml-3 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\build\app\generated\updated_navigation_xml\debug
+com.example.student_digital_id.app-packageDebugResources-4 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\build\app\intermediates\incremental\debug\packageDebugResources\merged.dir
+com.example.student_digital_id.app-packageDebugResources-5 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\build\app\intermediates\incremental\debug\packageDebugResources\stripped.dir
+com.example.student_digital_id.app-debug-6 C:\Users\jamee\Documents\GitHub\mobile-application-development\student_digital_id\build\app\intermediates\merged_res\debug\mergeDebugResources
