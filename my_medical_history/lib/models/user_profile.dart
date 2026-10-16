@@ -26,7 +26,7 @@ class UserProfile {
     this.lastSyncedAt,
     this.driveStorageUsed = '14.2 MB',
     this.autoSyncEnabled = true,
-    this.appLockEnabled = false,
+    this.appLockEnabled = true,
   });
 
   UserProfile copyWith({
@@ -60,4 +60,38 @@ class UserProfile {
       appLockEnabled: appLockEnabled ?? this.appLockEnabled,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'email': email,
+        'phone': phone,
+        'age': age,
+        'gender': gender,
+        'bloodGroup': bloodGroup,
+        'avatarUrl': avatarUrl,
+        'isDriveConnected': isDriveConnected,
+        'lastSyncedAt': lastSyncedAt?.toIso8601String(),
+        'driveStorageUsed': driveStorageUsed,
+        'autoSyncEnabled': autoSyncEnabled,
+        'appLockEnabled': appLockEnabled,
+      };
+
+  factory UserProfile.fromJson(Map<String, dynamic> json) => UserProfile(
+        id: json['id'] ?? 'usr_001',
+        name: json['name'] ?? 'M jameel',
+        email: json['email'] ?? 'jameelkharal70@gmail.com',
+        phone: json['phone'] ?? '03034086970',
+        age: json['age'] ?? 34,
+        gender: json['gender'] ?? 'Male',
+        bloodGroup: json['bloodGroup'] ?? 'O+',
+        avatarUrl: json['avatarUrl'] ?? '',
+        isDriveConnected: json['isDriveConnected'] ?? true,
+        lastSyncedAt: json['lastSyncedAt'] != null
+            ? DateTime.tryParse(json['lastSyncedAt'])
+            : null,
+        driveStorageUsed: json['driveStorageUsed'] ?? '14.2 MB',
+        autoSyncEnabled: json['autoSyncEnabled'] ?? true,
+        appLockEnabled: json['appLockEnabled'] ?? true,
+      );
 }

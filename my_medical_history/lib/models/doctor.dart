@@ -40,4 +40,26 @@ class Doctor {
       rating: rating ?? this.rating,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'specialization': specialization,
+        'hospital': hospital,
+        'phone': phone,
+        'address': address,
+        'avatarUrl': avatarUrl,
+        'rating': rating,
+      };
+
+  factory Doctor.fromJson(Map<String, dynamic> json) => Doctor(
+        id: json['id'] ?? '',
+        name: json['name'] ?? '',
+        specialization: json['specialization'] ?? '',
+        hospital: json['hospital'] ?? '',
+        phone: json['phone'] ?? '',
+        address: json['address'] ?? '',
+        avatarUrl: json['avatarUrl'] ?? '',
+        rating: (json['rating'] ?? 4.9).toDouble(),
+      );
 }

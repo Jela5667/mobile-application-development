@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/doctor.dart';
 import '../models/medical_visit.dart';
 import '../models/medicine.dart';
@@ -19,6 +21,7 @@ class AppState extends ChangeNotifier {
   bool _hasError = false;
   String? _errorMessage;
   bool _isSyncing = false;
+  String _appPin = '1234';
 
   // Active Filter States
   String? _filterDoctorId;
@@ -26,6 +29,88 @@ class AppState extends ChangeNotifier {
   String? _filterDiagnosis;
   String? _filterMedicine;
   DateTimeRange? _filterDateRange;
+
+  Future<void> initPersistence() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Load Profile
+      final profileStr = prefs.getString('user_profile');
+      if (profileStr != null) {
+        var loadedProfile = UserProfile.fromJson(jsonDecode(profileStr));
+        if (loadedProfile.email != 'jameelkharal70@gmail.com' ||
+            !loadedProfile.isDriveConnected) {
+          loadedProfile = loadedProfile.copyWith(
+            name: 'M jameel',
+            email: 'jameelkharal70@gmail.com',
+            phone: '03034086970',
+            isDriveConnected: true,
+            appLockEnabled: true,
+          );
+        }
+        _userProfile = loadedProfile;
+      } else {
+        _userProfile = SampleData.defaultProfile;
+      }
+      await prefs.setString('user_profile', jsonEncode(_userProfile.toJson()));
+
+      // Load Doctors
+      final doctorsStr = prefs.getString('doctors_list');
+      if (doctorsStr != null) {
+        final List decoded = jsonDecode(doctorsStr);
+        _doctors.clear();
+        _doctors.addAll(decoded.map((e) => Doctor.fromJson(e)));
+      } else {
+        await prefs.setString(
+            'doctors_list', jsonEncode(_doctors.map((d) => d.toJson()).toList()));
+      }
+
+      // Load Visits
+      final visitsStr = prefs.getString('visits_list');
+      if (visitsStr != null) {
+        final List decoded = jsonDecode(visitsStr);
+        _visits.clear();
+        _visits.addAll(decoded.map((e) => MedicalVisit.fromJson(e)));
+      } else {
+        await prefs.setString(
+            'visits_list', jsonEncode(_visits.map((v) => v.toJson()).toList()));
+      }
+
+      // Load Reports
+      final reportsStr = prefs.getString('reports_list');
+      if (reportsStr != null) {
+        final List decoded = jsonDecode(reportsStr);
+        _reports.clear();
+        _reports.addAll(decoded.map((e) => MedicalReport.fromJson(e)));
+      } else {
+        await prefs.setString(
+            'reports_list', jsonEncode(_reports.map((r) => r.toJson()).toList()));
+      }
+
+      // Load PIN
+      _appPin = prefs.getString('app_pin') ?? '1234';
+
+      notifyListeners();
+    } catch (e) {
+      debugPrint('Error initializing persistent data: $e');
+    }
+  }
+
+  Future<void> _saveData() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('user_profile', jsonEncode(_userProfile.toJson()));
+      await prefs.setString(
+          'doctors_list', jsonEncode(_doctors.map((d) => d.toJson()).toList()));
+      await prefs.setString(
+          'visits_list', jsonEncode(_visits.map((v) => v.toJson()).toList()));
+      await prefs.setString(
+          'reports_list', jsonEncode(_reports.map((r) => r.toJson()).toList()));
+      await prefs.setString('app_pin', _appPin);
+    } catch (e) {
+      debugPrint('Error saving persistent data: $e');
+    }
+  }
 
   // Getters
   UserProfile get userProfile => _userProfile;
@@ -38,6 +123,7 @@ class AppState extends ChangeNotifier {
   bool get hasError => _hasError;
   String? get errorMessage => _errorMessage;
   bool get isSyncing => _isSyncing;
+  String get appPin => _appPin;
 
   String? get filterDoctorId => _filterDoctorId;
   String? get filterHospital => _filterHospital;
@@ -65,11 +151,15 @@ class AppState extends ChangeNotifier {
         return false;
       }
       if (_filterHospital != null &&
-          !visit.doctor.hospital.toLowerCase().contains(_filterHospital!.toLowerCase())) {
+          !visit.doctor.hospital
+              .toLowerCase()
+              .contains(_filterHospital!.toLowerCase())) {
         return false;
       }
       if (_filterDiagnosis != null &&
-          !visit.diagnosis.toLowerCase().contains(_filterDiagnosis!.toLowerCase())) {
+          !visit.diagnosis
+              .toLowerCase()
+              .contains(_filterDiagnosis!.toLowerCase())) {
         return false;
       }
       if (_filterMedicine != null) {
@@ -79,7 +169,8 @@ class AppState extends ChangeNotifier {
       }
       if (_filterDateRange != null) {
         if (visit.visitDate.isBefore(_filterDateRange!.start) ||
-            visit.visitDate.isAfter(_filterDateRange!.end.add(const Duration(days: 1)))) {
+            visit.visitDate
+                .isAfter(_filterDateRange!.end.add(const Duration(days: 1)))) {
           return false;
         }
       }
@@ -180,12 +271,13 @@ class AppState extends ChangeNotifier {
 
   // --- ACTIONS & MUTATIONS ---
 
-  void addDoctor(Doctor doctor) {
+  Future<void> addDoctor(Doctor doctor) async {
     _doctors.add(doctor);
+    await _saveData();
     notifyListeners();
   }
 
-  void updateDoctor(Doctor updatedDoc) {
+  Future<void> updateDoctor(Doctor updatedDoc) async {
     final index = _doctors.indexWhere((d) => d.id == updatedDoc.id);
     if (index != -1) {
       _doctors[index] = updatedDoc;
@@ -194,40 +286,47 @@ class AppState extends ChangeNotifier {
           _visits[i] = _visits[i].copyWith(doctor: updatedDoc);
         }
       }
+      await _saveData();
       notifyListeners();
     }
   }
 
-  void addVisit(MedicalVisit visit) {
+  Future<void> addVisit(MedicalVisit visit) async {
     _visits.insert(0, visit);
+    await _saveData();
     notifyListeners();
   }
 
-  void updateVisit(MedicalVisit updatedVisit) {
+  Future<void> updateVisit(MedicalVisit updatedVisit) async {
     final index = _visits.indexWhere((v) => v.id == updatedVisit.id);
     if (index != -1) {
       _visits[index] = updatedVisit;
+      await _saveData();
       notifyListeners();
     }
   }
 
-  void deleteVisit(String visitId) {
+  Future<void> deleteVisit(String visitId) async {
     _visits.removeWhere((v) => v.id == visitId);
+    await _saveData();
     notifyListeners();
   }
 
-  void addReport(MedicalReport report) {
+  Future<void> addReport(MedicalReport report) async {
     _reports.insert(0, report);
+    await _saveData();
     notifyListeners();
   }
 
-  void deleteReport(String reportId) {
+  Future<void> deleteReport(String reportId) async {
     _reports.removeWhere((r) => r.id == reportId);
+    await _saveData();
     notifyListeners();
   }
 
-  void updateProfile(UserProfile profile) {
+  Future<void> updateProfile(UserProfile profile) async {
     _userProfile = profile;
+    await _saveData();
     notifyListeners();
   }
 
@@ -236,18 +335,27 @@ class AppState extends ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleAutoSync(bool value) {
+  Future<void> toggleAutoSync(bool value) async {
     _userProfile = _userProfile.copyWith(autoSyncEnabled: value);
+    await _saveData();
     notifyListeners();
   }
 
-  void toggleAppLock(bool value) {
+  Future<void> toggleAppLock(bool value) async {
     _userProfile = _userProfile.copyWith(appLockEnabled: value);
+    await _saveData();
     notifyListeners();
   }
 
-  void setDriveConnected(bool connected) {
+  Future<void> setDriveConnected(bool connected) async {
     _userProfile = _userProfile.copyWith(isDriveConnected: connected);
+    await _saveData();
+    notifyListeners();
+  }
+
+  Future<void> updatePin(String newPin) async {
+    _appPin = newPin;
+    await _saveData();
     notifyListeners();
   }
 
@@ -261,6 +369,7 @@ class AppState extends ChangeNotifier {
     _userProfile = _userProfile.copyWith(
       lastSyncedAt: DateTime.now(),
     );
+    await _saveData();
     notifyListeners();
   }
 

@@ -44,4 +44,30 @@ class MedicalReport {
       fileUrl: fileUrl ?? this.fileUrl,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'title': title,
+        'category': category,
+        'date': date.toIso8601String(),
+        'doctorName': doctorName,
+        'hospitalName': hospitalName,
+        'fileType': fileType,
+        'fileSize': fileSize,
+        'fileUrl': fileUrl,
+      };
+
+  factory MedicalReport.fromJson(Map<String, dynamic> json) => MedicalReport(
+        id: json['id'] ?? '',
+        title: json['title'] ?? '',
+        category: json['category'] ?? '',
+        date: json['date'] != null
+            ? DateTime.parse(json['date'])
+            : DateTime.now(),
+        doctorName: json['doctorName'] ?? '',
+        hospitalName: json['hospitalName'] ?? '',
+        fileType: json['fileType'] ?? 'PDF',
+        fileSize: json['fileSize'] ?? '1.0 MB',
+        fileUrl: json['fileUrl'] ?? '',
+      );
 }

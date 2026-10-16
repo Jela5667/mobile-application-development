@@ -76,4 +76,56 @@ class MedicalVisit {
       attachments: attachments ?? this.attachments,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'doctorId': doctorId,
+        'doctor': doctor.toJson(),
+        'visitDate': visitDate.toIso8601String(),
+        'visitTime': visitTime,
+        'reasonForVisit': reasonForVisit,
+        'symptoms': symptoms,
+        'diagnosis': diagnosis,
+        'doctorNotes': doctorNotes,
+        'followUpDate': followUpDate?.toIso8601String(),
+        'hospitalAddress': hospitalAddress,
+        'medicines': medicines.map((m) => m.toJson()).toList(),
+        'tests': tests.map((t) => t.toJson()).toList(),
+        'prescriptionAttachmentPath': prescriptionAttachmentPath,
+        'prescriptionFileType': prescriptionFileType,
+        'attachments': attachments,
+      };
+
+  factory MedicalVisit.fromJson(Map<String, dynamic> json) => MedicalVisit(
+        id: json['id'] ?? '',
+        doctorId: json['doctorId'] ?? '',
+        doctor: json['doctor'] != null
+            ? Doctor.fromJson(json['doctor'])
+            : Doctor(id: 'doc_1', name: 'Dr. Ahmed Khan', specialization: 'Cardiologist', hospital: 'City Medical Hospital', phone: '', address: ''),
+        visitDate: json['visitDate'] != null
+            ? DateTime.parse(json['visitDate'])
+            : DateTime.now(),
+        visitTime: json['visitTime'] ?? '',
+        reasonForVisit: json['reasonForVisit'] ?? '',
+        symptoms: json['symptoms'] != null
+            ? List<String>.from(json['symptoms'])
+            : [],
+        diagnosis: json['diagnosis'] ?? '',
+        doctorNotes: json['doctorNotes'] ?? '',
+        followUpDate: json['followUpDate'] != null
+            ? DateTime.tryParse(json['followUpDate'])
+            : null,
+        hospitalAddress: json['hospitalAddress'] ?? '',
+        medicines: json['medicines'] != null
+            ? (json['medicines'] as List).map((m) => Medicine.fromJson(m)).toList()
+            : [],
+        tests: json['tests'] != null
+            ? (json['tests'] as List).map((t) => MedicalTest.fromJson(t)).toList()
+            : [],
+        prescriptionAttachmentPath: json['prescriptionAttachmentPath'],
+        prescriptionFileType: json['prescriptionFileType'],
+        attachments: json['attachments'] != null
+            ? List<String>.from(json['attachments'])
+            : [],
+      );
 }

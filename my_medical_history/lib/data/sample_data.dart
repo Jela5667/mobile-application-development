@@ -8,9 +8,9 @@ import '../models/user_profile.dart';
 class SampleData {
   static final UserProfile defaultProfile = UserProfile(
     id: 'usr_001',
-    name: 'Ahmad Raza',
-    email: 'ahmad.raza@gmail.com',
-    phone: '+1 (555) 102-9384',
+    name: 'M jameel',
+    email: 'jameelkharal70@gmail.com',
+    phone: '03034086970',
     age: 34,
     gender: 'Male',
     bloodGroup: 'O+',
@@ -18,7 +18,7 @@ class SampleData {
     lastSyncedAt: DateTime.now().subtract(const Duration(minutes: 45)),
     driveStorageUsed: '14.2 MB',
     autoSyncEnabled: true,
-    appLockEnabled: false,
+    appLockEnabled: true,
   );
 
   static final List<Doctor> doctors = [

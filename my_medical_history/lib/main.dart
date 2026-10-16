@@ -4,24 +4,29 @@ import 'theme/app_theme.dart';
 import 'screens/splash_screen.dart';
 import 'screens/main_navigation_screen.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(const MyMedicalHistoryApp());
+  final appState = AppState();
+  await appState.initPersistence();
+  runApp(MyMedicalHistoryApp(appState: appState));
 }
 
 class MyMedicalHistoryApp extends StatefulWidget {
-  const MyMedicalHistoryApp({super.key});
+  final AppState? appState;
+  const MyMedicalHistoryApp({super.key, this.appState});
 
   @override
   State<MyMedicalHistoryApp> createState() => _MyMedicalHistoryAppState();
 }
 
 class _MyMedicalHistoryAppState extends State<MyMedicalHistoryApp> {
-  final AppState _appState = AppState();
+  late final AppState _appState = widget.appState ?? AppState();
 
   @override
   void dispose() {
-    _appState.dispose();
+    if (widget.appState == null) {
+      _appState.dispose();
+    }
     super.dispose();
   }
 

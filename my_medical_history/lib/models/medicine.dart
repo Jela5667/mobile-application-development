@@ -48,4 +48,32 @@ class Medicine {
       prescribedDate: prescribedDate ?? this.prescribedDate,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'dose': dose,
+        'frequency': frequency,
+        'duration': duration,
+        'mealTiming': mealTiming,
+        'instructions': instructions,
+        'visitId': visitId,
+        'doctorName': doctorName,
+        'prescribedDate': prescribedDate?.toIso8601String(),
+      };
+
+  factory Medicine.fromJson(Map<String, dynamic> json) => Medicine(
+        id: json['id'] ?? '',
+        name: json['name'] ?? '',
+        dose: json['dose'] ?? '',
+        frequency: json['frequency'] ?? '',
+        duration: json['duration'] ?? '',
+        mealTiming: json['mealTiming'] ?? '',
+        instructions: json['instructions'] ?? '',
+        visitId: json['visitId'],
+        doctorName: json['doctorName'],
+        prescribedDate: json['prescribedDate'] != null
+            ? DateTime.tryParse(json['prescribedDate'])
+            : null,
+      );
 }

@@ -7,6 +7,115 @@ import 'backup_sync_screen.dart';
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
+  void _showChangePinModal(BuildContext context) {
+    final appState = AppStateProvider.of(context);
+    final currentPinController = TextEditingController();
+    final newPinController = TextEditingController();
+    final confirmPinController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (modalContext) => Padding(
+        padding: EdgeInsets.only(
+          left: 20,
+          right: 20,
+          top: 20,
+          bottom: MediaQuery.of(modalContext).viewInsets.bottom + 20,
+        ),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Change App Lock PIN',
+                      style: TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  IconButton(
+                      icon: const Icon(Icons.close),
+                      onPressed: () => Navigator.pop(modalContext)),
+                ],
+              ),
+              const Divider(),
+              const SizedBox(height: 8),
+              TextField(
+                controller: currentPinController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Current PIN'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: newPinController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'New 4-Digit PIN'),
+              ),
+              const SizedBox(height: 8),
+              TextField(
+                controller: confirmPinController,
+                keyboardType: TextInputType.number,
+                maxLength: 4,
+                obscureText: true,
+                decoration: const InputDecoration(labelText: 'Confirm New PIN'),
+              ),
+              const SizedBox(height: 16),
+              SizedBox(
+                width: double.infinity,
+                height: 48,
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (currentPinController.text != appState.appPin) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Current PIN is incorrect!'),
+                            backgroundColor: Colors.red),
+                      );
+                      return;
+                    }
+                    if (newPinController.text.length != 4) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('New PIN must be 4 digits!'),
+                            backgroundColor: Colors.red),
+                      );
+                      return;
+                    }
+                    if (newPinController.text != confirmPinController.text) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('New PINs do not match!'),
+                            backgroundColor: Colors.red),
+                      );
+                      return;
+                    }
+                    appState.updatePin(newPinController.text);
+                    Navigator.pop(modalContext);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('App Lock PIN changed successfully!'),
+                        backgroundColor: AppTheme.successGreen,
+                      ),
+                    );
+                  },
+                  child: const Text('Update PIN'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final appState = AppStateProvider.of(context);
@@ -110,6 +219,15 @@ class SettingsScreen extends StatelessWidget {
                     subtitle: const Text('Require authentication to open app'),
                     value: user.appLockEnabled,
                     onChanged: (val) => appState.toggleAppLock(val),
+                  ),
+                  const Divider(height: 1, indent: 56, color: AppTheme.borderGray),
+                  ListTile(
+                    leading: const Icon(Icons.password_rounded,
+                        color: AppTheme.primaryBlue),
+                    title: const Text('Change App Lock PIN'),
+                    subtitle: Text('Current PIN: ${appState.appPin}'),
+                    trailing: const Icon(Icons.chevron_right),
+                    onTap: () => _showChangePinModal(context),
                   ),
                 ],
               ),

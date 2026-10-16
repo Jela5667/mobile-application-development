@@ -36,4 +36,26 @@ class MedicalTest {
       fileType: fileType ?? this.fileType,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'testName': testName,
+        'testDate': testDate.toIso8601String(),
+        'result': result,
+        'doctorNotes': doctorNotes,
+        'reportAttachmentPath': reportAttachmentPath,
+        'fileType': fileType,
+      };
+
+  factory MedicalTest.fromJson(Map<String, dynamic> json) => MedicalTest(
+        id: json['id'] ?? '',
+        testName: json['testName'] ?? '',
+        testDate: json['testDate'] != null
+            ? DateTime.parse(json['testDate'])
+            : DateTime.now(),
+        result: json['result'] ?? '',
+        doctorNotes: json['doctorNotes'] ?? '',
+        reportAttachmentPath: json['reportAttachmentPath'],
+        fileType: json['fileType'],
+      );
 }

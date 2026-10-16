@@ -10,7 +10,6 @@ class DriveSetupScreen extends StatefulWidget {
 }
 
 class _DriveSetupScreenState extends State<DriveSetupScreen> {
-  bool _isConnected = false;
   bool _isConnecting = false;
 
   void _handleConnectDrive() async {
@@ -21,9 +20,10 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
     await Future.delayed(const Duration(milliseconds: 1500));
 
     if (mounted) {
+      final appState = AppStateProvider.of(context);
+      appState.setDriveConnected(true);
       setState(() {
         _isConnecting = false;
-        _isConnected = true;
       });
     }
   }
@@ -36,6 +36,14 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appState = AppStateProvider.of(context);
+    final user = appState.userProfile;
+    final bool isConnected = user.isDriveConnected;
+
+    final initials = user.name.isNotEmpty
+        ? user.name.split(' ').map((e) => e[0]).take(2).join()
+        : 'MJ';
+
     return Scaffold(
       backgroundColor: AppTheme.surfaceWhite,
       body: SafeArea(
@@ -91,11 +99,11 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
                     children: [
                       Row(
                         children: [
-                          const CircleAvatar(
+                          CircleAvatar(
                             backgroundColor: AppTheme.primaryLight,
                             child: Text(
-                              'AR',
-                              style: TextStyle(
+                              initials,
+                              style: const TextStyle(
                                 color: AppTheme.primaryBlue,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -105,18 +113,18 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Text(
-                                  'Ahmad Raza',
-                                  style: TextStyle(
+                                  user.name,
+                                  style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
                                     color: AppTheme.darkText,
                                   ),
                                 ),
                                 Text(
-                                  'ahmad.raza@gmail.com',
-                                  style: TextStyle(
+                                  user.email,
+                                  style: const TextStyle(
                                     color: AppTheme.subtitleText,
                                     fontSize: 13,
                                   ),
@@ -146,7 +154,7 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
-                              color: _isConnected
+                              color: isConnected
                                   ? const Color(0xFFE8F5E9)
                                   : const Color(0xFFFFF3E0),
                               borderRadius: BorderRadius.circular(12),
@@ -154,21 +162,21 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
                             child: Row(
                               children: [
                                 Icon(
-                                  _isConnected
+                                  isConnected
                                       ? Icons.check_circle_rounded
                                       : Icons.info_outline_rounded,
                                   size: 14,
-                                  color: _isConnected
+                                  color: isConnected
                                       ? const Color(0xFF2E7D32)
                                       : const Color(0xFFE65100),
                                 ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  _isConnected ? 'Connected' : 'Not Connected',
+                                  isConnected ? 'Connected' : 'Not Connected',
                                   style: TextStyle(
                                     fontSize: 12,
                                     fontWeight: FontWeight.bold,
-                                    color: _isConnected
+                                    color: isConnected
                                         ? const Color(0xFF2E7D32)
                                         : const Color(0xFFE65100),
                                   ),
@@ -179,7 +187,7 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
                         ],
                       ),
 
-                      if (_isConnected) ...[
+                      if (isConnected) ...[
                         const SizedBox(height: 14),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -230,7 +238,7 @@ class _DriveSetupScreenState extends State<DriveSetupScreen> {
 
               const Spacer(),
 
-              if (!_isConnected) ...[
+              if (!isConnected) ...[
                 SizedBox(
                   height: 52,
                   width: double.infinity,
