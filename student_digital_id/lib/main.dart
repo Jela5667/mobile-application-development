@@ -11,7 +11,7 @@ void main() {
 
 // MAIN APPLICATION WIDGET
 class StudentDigitalIdApp extends StatelessWidget {
-  const StudentDigitalIdApp({Key? key}) : super(key: key);
+  const StudentDigitalIdApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +29,7 @@ class StudentDigitalIdApp extends StatelessWidget {
 
 // DASHBOARD SCREEN (StatefulWidget for managing Quick Notes state)
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+  const DashboardScreen({super.key});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -199,9 +199,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       // Card Header Title
-                      Row(
+                      const Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: const [
+                        children: [
                           Text(
                             'STUDENT DIGITAL ID CARD',
                             style: TextStyle(
@@ -259,10 +259,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           // =================================================
                           // STUDENT INFORMATION ALIGNMENT (Column & Row)
                           // =================================================
-                          Expanded(
+                          const Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Text(
                                   'M. Jameel',
                                   style: TextStyle(
@@ -320,19 +320,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
               ),
               const SizedBox(height: 12),
               // Dashboard Summary Cards side-by-side using Row and Expanded
-              Row(
+              const Row(
                 children: [
                   Expanded(
                     child: Card(
                       elevation: 3,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Icon(Icons.school, color: Colors.indigo, size: 28),
                             SizedBox(height: 8),
                             Text(
@@ -355,18 +355,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       ),
                     ),
                   ),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Card(
                       elevation: 3,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.all(Radius.circular(12)),
                       ),
                       child: Padding(
-                        padding: const EdgeInsets.all(16.0),
+                        padding: EdgeInsets.all(16.0),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
-                          children: const [
+                          children: [
                             Icon(Icons.calendar_month, color: Colors.indigo, size: 28),
                             SizedBox(height: 8),
                             Text(
